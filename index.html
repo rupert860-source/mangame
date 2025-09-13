@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>愛的花野菜❤️</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: "Microsoft JhengHei", sans-serif;
+      background: linear-gradient(135deg, #fff0f5, #ffe6f0);
+      padding: 40px;
+    }
+    h1 { 
+      color: #d63384; 
+      font-size: 36px;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px #fff;
+    }
+    .lottery-box {
+      margin-top: 30px;
+      font-size: 60px;
+      padding: 40px;
+      border: 8px solid gold;
+      border-radius: 20px;
+      background: linear-gradient(to bottom, #fffbe7, #ffe082);
+      display: inline-block;
+      min-width: 260px;
+      font-weight: bold;
+      color: #b52d6b;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+    }
+    textarea {
+      padding: 10px;
+      font-size: 16px;
+      width: 300px;
+      height: 100px;
+      border-radius: 6px;
+      border: 2px solid #d63384;
+      margin-bottom: 10px;
+      resize: none;
+    }
+    button {
+      margin: 15px;
+      padding: 15px 30px;
+      font-size: 22px;
+      background: #d63384;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    button:hover { background: #b52d6b; }
+    #history {
+      margin-top: 30px;
+      padding: 20px;
+      background: #ffffffcc;
+      border: 3px solid gold;
+      border-radius: 10px;
+      max-width: 650px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+      font-size: 18px;
+      line-height: 1.6;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    #history strong { color: #d63384; }
+  </style>
+</head>
+<body>
+  <h1>💖 愛的花野菜 ❤️ 💖</h1>
+
+  <div>
+    <textarea id="namesInput" placeholder="請輸入參加者名字，用逗號或換行分隔"></textarea><br>
+    <button onclick="addParticipants()">加入名單</button>
+  </div>
+
+  <div class="lottery-box" id="result">點擊下方按鈕抽出幸運女孩！</div><br>
+  <button onclick="draw()">開始抽捧花</button>
+  <button onclick="resetGame()">重新開始</button>
+
+  <div id="history"><strong>已抽中：</strong><br></div>
+
+  <script>
+    let participants = [];
+    let drawn = [];
+    let rolling = false;
+
+    function addParticipants() {
+      const input = document.getElementById("namesInput").value.trim();
+      if (!input) {
+        alert("請輸入名字！");
+        return;
+      }
+      const names = input.split(/[\n,，]+/).map(name => name.trim()).filter(name => name);
+      let added = 0;
+      for (let name of names) {
+        if (!participants.includes(name) && !drawn.includes(name)) {
+          participants.push(name);
+          added++;
+        }
+      }
+      alert(`已加入 ${added} 位參加者`);
+      document.getElementById("namesInput").value = "";
+    }
+
+    function draw() {
+      if (rolling) return;
+      if (participants.length === 0) {
+        alert("名單空的！請先加入參加者。");
+        return;
+      }
+
+      rolling = true;
+      const box = document.getElementById("result");
+      let interval = 50;
+      const duration = 5000;
+      let elapsed = 0;
+
+      function rollOnce() {
+        const randomIndex = Math.floor(Math.random() * participants.length);
+        box.innerText = "💐 " + participants[randomIndex] + " 💐";
+      }
+
+      function roll() {
+        if (elapsed >= duration) {
+          const index = Math.floor(Math.random() * participants.length);
+          const selected = participants.splice(index, 1)[0];
+          drawn.push(selected);
+          box.innerText = "💐 " + selected + " 💐";
+          updateHistory();
+          rolling = false;
+          return;
+        }
+        rollOnce();
+        elapsed += interval;
+        interval += 20;
+        setTimeout(roll, interval);
+      }
+
+      roll();
+    }
+
+    function updateHistory() {
+      document.getElementById("history").innerHTML = "<strong>已抽中：</strong><br>" + drawn.join(", ");
+    }
+
+    function resetGame() {
+      if (confirm("確定要重新開始嗎？所有紀錄將清空！")) {
+        participants = [];
+        drawn = [];
+        document.getElementById("namesInput").value = "";
+        document.getElementById("result").innerText = "點擊下方按鈕抽出幸運女孩！";
+        document.getElementById("history").innerHTML = "<strong>已抽中：</strong><br>";
+        rolling = false;
+      }
+    }
+  </script>
+</body>
+</html>
